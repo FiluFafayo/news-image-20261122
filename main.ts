@@ -1,29 +1,42 @@
-// News-image daily entry (Node 22, standard library only): the image beside this
-// file is copied to /output/entry.png. The gate takes a whole PNG or JPEG of at
-// most 1 MiB and 1024 by 1024 pixels; the judge sees exactly the bytes copied.
-//
-// Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
-//   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+// Entry program for the 22 November 2026 world-news image.
+// It takes the image shipped beside this file and places a validated copy
+// in the output directory, byte for byte.
+import { chmodSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+const MAX_IMAGE_BYTES = 1048576;
+const JPEG_PREFIX = Buffer.from([0xff, 0xd8, 0xff]);
+const PNG_PREFIX = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
-// The gate's limits: a whole PNG or JPEG, at most 1 MiB. Validate the source
-// before writing it out, so a corrupt or oversized image fails loudly here
-// instead of silently becoming an invalid entry.
-const MAX_BYTES = 1048576;
-const JPEG_MAGIC = Buffer.from([0xff, 0xd8, 0xff]);
-const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const sourceDir = dirname(fileURLToPath(import.meta.url));
+const sourceFile = join(sourceDir, "entry.png");
+const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
+const outputFile = join(outputDir, "entry.png");
 
-const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
-const bytes = readFileSync(new URL('./entry.png', import.meta.url));
+const image = readFileSync(sourceFile);
 
-if (bytes.length > MAX_BYTES) {
-  throw new Error(`entry.png is ${bytes.length} bytes, over the 1 MiB gate limit`);
-}
-if (!bytes.subarray(0, 3).equals(JPEG_MAGIC) && !bytes.subarray(0, 8).equals(PNG_MAGIC)) {
-  throw new Error('entry.png is neither a JPEG nor a PNG (bad magic bytes)');
+if (image.length > MAX_IMAGE_BYTES) {
+  throw new Error(
+    `entry image is ${image.length} bytes, over the 1 MiB limit of ${MAX_IMAGE_BYTES} bytes`,
+  );
 }
 
-mkdirSync(outDir, { recursive: true });
-writeFileSync(join(outDir, 'entry.png'), bytes);
+const isJpeg = image.subarray(0, JPEG_PREFIX.length).equals(JPEG_PREFIX);
+const isPng = image.subarray(0, PNG_PREFIX.length).equals(PNG_PREFIX);
+if (!isJpeg && !isPng) {
+  throw new Error(
+    "entry image is neither a JPEG nor a PNG: its first bytes match neither format",
+  );
+}
+
+mkdirSync(outputDir, { recursive: true });
+writeFileSync(outputFile, image);
+// The grader collects the output as a different user, so the file must be
+// readable by everyone, and a read-back check proves the copy is exact.
+chmodSync(outputFile, 0o644);
+const written = readFileSync(outputFile);
+if (!written.equals(image)) {
+  throw new Error("output does not match the source image");
+}
+console.log(`wrote ${outputFile}: ${image.length} bytes (${isJpeg ? "JPEG" : "PNG"})`);

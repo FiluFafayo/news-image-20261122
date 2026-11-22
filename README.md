@@ -1,19 +1,17 @@
-[![make.fun · news-image-20261122](https://make.fun/badge/news-image-20261122.svg)](https://make.fun/bounty/news-image-20261122?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261122)
-[![rank](https://make.fun/badge/news-image-20261122/FiluFafayo/news-image-20261122/rank.svg)](https://make.fun/bounty/news-image-20261122/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261122)
-[![reward](https://make.fun/badge/news-image-20261122/FiluFafayo/news-image-20261122/reward.svg)](https://make.fun/bounty/news-image-20261122?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261122)
+# World News in One Image — 22 November 2026
 
-# Sum up 22 November's world news in one image
+A single image that sums up the world's news of Sunday 22 November 2026.
 
-Entry for the [make.fun](https://make.fun/bounty/news-image-20261122) bounty
-`news-image-20261122` ($100).
+[![make.fun bounty](https://make.fun/badge/news-image-20261122.svg)](https://make.fun/c/news-image-20261122)
+[![entry rank](https://make.fun/badge/news-image-20261122/FiluFafayo/news-image-20261122/rank.svg)](https://make.fun/c/news-image-20261122)
+[![entry reward](https://make.fun/badge/news-image-20261122/FiluFafayo/news-image-20261122/reward.svg)](https://make.fun/c/news-image-20261122)
 
-The program copies the front-page image beside it to `/output/entry.png`
-(see `main.ts`). The image is a one-page newspaper front page for
-Sunday, 22 November 2026: Iran's strikes on US bases in Bahrain and
-tankers hit in the Strait of Hormuz (lead), the Indonesia factory fire
-in Cikande, Mexico's capture of cartel boss 'El Chapo Isidro', COP31
-running into overtime over fossil fuels, France's sixth weekend of
-protests, and the FBI database breach — with the EU–Indonesia trade
-deal and GTA 6's record launch in the bottom strip.
+Bounty: https://make.fun/c/news-image-20261122 — also at https://make.fun/bounty/news-image-20261122
 
-Run locally: `mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts`
+## Run
+
+```sh
+mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+```
+
+The program validates the bundled image (at most 1 MiB, JPEG or PNG by its first bytes) and writes it to `out/entry.png`, byte for byte.
